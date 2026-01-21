@@ -31,7 +31,7 @@ DatingApp — это **веб-приложение на Django**, деплой �
 - **API Документация**: Swagger (drf-yasg)
 - **CORS**:             "django-cors-headers"
 - **Деплой**:           Docker + Docker Compose (на Ubuntu из Docker Desktop)
-- **Тестовые данные**:  Кастомная команда "generate_mock_data"
+- **Тестовые данные**:  Кастомная команда "generate_mock_data" - запускается из entrypoint.sh при разворачивании контейнера
 
 ## 📦 Структура проекта
 
@@ -119,7 +119,7 @@ C:.
 .env
 # Django
 DEBUG=True
-SECRET_KEY=1WMOW4oQo6dcVnTtaBJNg5h6mRBwjlkPTEM03WdBK7vZUMUTNS6n1Ukcj_E3HcjRcWA
+SECRET_KEY=**********
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,[::1],backend,web  # [::1] — IPv6-адрес локального хоста
 
 # Database
