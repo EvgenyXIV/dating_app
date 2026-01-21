@@ -1,0 +1,16 @@
+<!-- НАСЛЕДНИК ШАБЛОНА base.html -->
+{% extends "base.html" %}
+{% block content %}
+    <meta charset="UTF-8">
+    <h1>ПОДРОБНОСТИ О ПОЛЬЗОВАТЕЛЕ</h1>
+        <h2>
+            {% include 'includes/user_header.html' %}<br> <!--всё содержание блока header вынесли в отдельный файл 
+                                                            dating_app\templates\includes\user_header.html-->
+    <!--</h2>
+            {% if main_image %}                     Проверям, есть ли главное фото сотрудника, чтобы страница "не упала", и выводим фото 
+                <img src="{{ main_image.image.url }}"/>    Путь к фото upload_to="user_photos/" указан в объекте image в модели UserPhoto
+            {% else %}
+                <p>Нет фото</p>
+            {% endif %}-->
+   
+{% endblock %}

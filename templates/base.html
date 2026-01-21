@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link href="{% static 'static_dev/css/index.css' %}"/>
+    <meta charset="UTF-8">  <!-- кодировка текста на странице-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  <!--только для мобильников, масштабирование текста видимой на экране (в окне) части html-страницы-->
+    <!--Указываем блок-контент для тега <title> у наследников-->
+    <title>{% block title %} Django тема 8. Дипломный проект "Сайт знакомств" {% endblock %}</title>
+    <p>Header</p>
+    <img src="{% static 'images\Synergy.png' %}" alt="LOGO" width="300" height="50" /> <!-- Если рисунка нет в папке - на его месте будет
+                                                                                     картинка по умолчанию подписана "LOGO" -->
+    <!-- подпись под рисунком-->
+    <h2> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Здесь учат</h2><br>
+
+    <a href="{% url 'user_detail' user.id %}">Посмотреть пользователя</a></br> <!-- teg <a> - формат гиперссылки, указанной в атрибуте href= , 
+                                                                            имя адреса гиперссылки указано в теге url и 
+                                                                            задаётся в файле urls.py,
+                                                                            здесь - добавить ссылку на главную страницу, 
+                                                                            параметр в теге url передаём через пробел -->
+                                                                                                 
+    <!-- устанавливаем связь шаблона index.html и таблицы стилей index.css, указывая относительный адрес url
+     по отношению к __main___ с учётом того, что по умолчанию __main___
+     находит шаблоны и статические файлы в директориях templates и static соответственно-->
+
+    <link rel="stylesheet" type="text/css" href="C:\Users\EvgenyMINI_S\PythonProjects\SynergyProjectFinal\DatingApp\dating_app\static\css\index.css"/>
+</head>
+    <body>
+        {% block content %}
+        <main>
+            Контента пока нет :() <!-- TODO: добавить контент В наследниках base.html других страниц -->
+        </main>
+        <footer>
+            <p>Footer</p>
+        </footer>
+        {% endblock %}
+    </body>
+</html>

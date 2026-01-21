@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Удаление аккаунта</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .warning {
+            background: #fff3f3;
+            border: 1px solid #ffcdd2;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .btn-secondary {
+            background: #757575;
+            color: white;
+        }
+        .btn:hover {
+            opacity: 0.8;
+        }
+        form {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Удаление аккаунта</h1>
+    
+    <div class="warning">
+        <strong>Внимание!</strong> Это действие нельзя отменить.
+    </div>
+
+    <p>После удаления аккаунта:</p>
+    <ul style="text-align: left; display: inline-block;">
+        <li>Ваш профиль будет удален</li>
+        <li>Все ваши фото будут удалены</li>
+        <li>История чатов будет удалена</li>
+        <li>Все мэтчи будут удалены</li>
+    </ul>
+
+    <form method="post">
+        {% csrf_token %}
+        <p>
+            <label for="password">Подтвердите пароль:</label><br>
+            <input type="password" id="password" name="password" required style="padding: 8px; margin: 10px 0; width: 200px;">
+        </p>
+        <button type="submit" class="btn btn-danger">Удалить аккаунт</button>
+    </form>
+
+    <a href="/profile/" class="btn btn-secondary">Отмена</a>
+</body>
+</html>

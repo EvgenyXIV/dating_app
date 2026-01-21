@@ -1,0 +1,33 @@
+{% load static %}
+{% static "css/index.css" %}
+        <meta charset="UTF-8">      
+        <header>
+            <!-- Получаем данные пользователя из встроенной модели User и выводим их списком -->
+            ПОЛЬЗОВАТЕЛЬ: {{ user.first_name }} {{ user.last_name }}</br>
+
+            <!--Путь к фото upload_to="user_photos/" указан в image - экземпляре класса ImageField() в модели UserPhoto-->
+            <!-- выводим главное изображение в красной рамке из контекстного объекта main_image (наличие гл.фото проверяется в user_detail.html) -->
+            <img src="{{ main_image.image.url }}" alt="PHOTO" style="border: 8px solid red;">
+
+            <ul>
+                <li>email - {{ user.email }}</li>
+                <li>Имя - {{ user.first_name }}</li>
+                <li>Фамилия - {{ user.last_name }}</li>
+                <li>Пол - {{ user.gender }}</li>
+                <li>Возраст - {{ user.age }}</li>
+                <li>Город - {{ user.city }}</li>
+                <li>Увлечения - {{ user.hobbies }}</li>
+
+            Изображения:
+            <ul>
+                {% for image in user.photos.all %}
+                    {% if image.image %}
+                        {% if not image.is_main %}
+                            <img src="{{ image.image.url }}" alt="PHOTO">
+                        {% endif %}
+                    {% else %}
+                        <p> "нет изображения, добавьте изображение или удалите объект" </p>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </header>

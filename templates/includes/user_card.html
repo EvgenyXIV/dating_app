@@ -1,0 +1,23 @@
+<!--Код для цикла for в шаблоне staffmanager\templates\staff\employee_list.html-->
+    <meta charset="UTF-8">
+    <b>{{ forloop.counter }}.</b>  Сотрудник: {{ employee.first_name }} {{ employee.last_name }} Стаж в Компании, дней ={{ employee.employment_days }}
+    <a href="{% url 'staff:employee-detail' employee.id %}">Подробнее</a></br>   <!-- teg <a> - формат гиперссылки, указанной в атрибуте href= , 
+                                                                                имя адреса гиперссылки указано в теге url и 
+                                                                                задаётся в файле urls.py,
+                                                                                здесь - добавить ссылку на на карточку сотрудника, 
+                                                                                параметр employee.id в теге url передаём через пробел -->
+
+    <!--Путь к фото upload_to="employee_images/" указан в image - экземпляре класса ImageField() в модели EmployeeImage-->
+    <!-- выводим главное изображение в красной рамке из контекстного объекта main_image -->
+    <img src="{{ employee.main_image.image.url }}" alt="PHOTO" style="border: 8px solid red;"></br></br>  
+
+    <!--        <ul>
+                 {% for image in employee.employee_gallery.all %} Перебираем все изображения в списке связанных изображений -->
+    <!--                 {% if image.is_main %}                       Если это главное изображение -->
+    <!--                     <img src="{{ employee.main_image.image.url }}" alt="PHOTO" style="border: 8px solid red;">    выводим главное изображение в красной рамке -->
+    <!--                 {% endif %}
+                {% endfor %}
+            </ul>
+    -->
+            
+

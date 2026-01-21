@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dating Platform API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        .auth-section {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            background: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #1976D2;
+        }
+        .btn-success {
+            background: #4CAF50;
+        }
+        .btn-success:hover {
+            background: #45a049;
+        }
+        .endpoint {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .get { background: #d4edda; color: #155724; }
+        .post { background: #d1ecf1; color: #0c5460; }
+        .put { background: #fff3cd; color: #856404; }
+        .patch { background: #ffeaa7; color: #856404; }
+        .delete { background: #f8d7da; color: #721c24; }
+        .auth-badge {
+            background: #ff4444;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            margin-left: 10px;
+        }
+        .url {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 5px 0;
+            word-break: break-all;
+        }
+        .user-status {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .authenticated {
+            background: #d4edda;
+            color: #155724;
+        }
+        .anonymous {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .test-creds {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Dating Platform API</h1>
+        <p>API для платформы знакомств | Версия 1.0.0</p>
+    </div>
+
+    <div id="authStatus">
+        <div class="user-status anonymous">
+            🔐 Не авторизован
+        </div>
+    </div>
+
+    <div class="auth-section">
+        <h2>🔑 Аутентификация</h2>
+        <p>Для доступа к API потребуется JWT (токен выдаётся автоматически при авторизации через /api-auth/login/</p>
+        <p>или можно скопировать через /api/token/ для зарегистрированных пользователей).</p>
+        <div></div>
+        <p><strong>Быстрый вход с тестовыми учётными записями и просмотр документации (dev-режим)</strong></p>
+        
+        <div>
+            <button class="btn" onclick="quickLogin('test_user')">
+                Войти как Test User
+            </button>
+            <button class="btn" onclick="quickLogin('admin')">
+                Войти как Admin
+            </button>
+            <a href="/swagger/" class="btn btn-success">
+                Swagger Docs
+            </a>
+        </div>
+
+        <div class="test-creds">
+            <h3>Тестовые учетные данные:</h3>
+            <p><strong>Test User:</strong> test@test.ru / password</p>
+            <p><strong>Admin:</strong> admin@admin.ru / password</p>
+        </div>
+    </div>
+
+    <h2>📋 Доступные эндпоинты</h2>
+    <div id="endpoints">
+        <p>Загрузка эндпоинтов...</p>
+    </div>
+
+    <script>
+        //показываем эндпойнты, доступные для неавторизованных пользователей
+        loadEndpoints();
+        
+        // Функция возвращает CSRF токен из куки (если есть) для защиты от csrf-атак
+        // В кросс-доменные запросы включаем этот CSRF-токен иначе запросы блокируются
+        function getCSRFToken() {
+            const name = 'csrftoken';
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Проверка статуса аутентификации(JWT или сессия)
+        async function checkAuthStatus() {
+            const token = localStorage.getItem('access_token');
+            const authStatus = document.getElementById('authStatus');
+
+            let isAuth = false;
+            let email = 'unknown';
+
+            // 1. Проверка по JWT
+            if (token) {
+                try {
+                    const response = await fetch('/api/users/profile/', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        email = data.email || 'unknown';
+                        isAuth = true;
+                    }
+                } catch (err) {
+                    console.warn('JWT проверка не удалась:', err);
+                }
+            }
+
+            // 2. Проверка по сессии (если JWT нет или не сработал)
+            if (!isAuth) {
+                try {
+                    const response = await fetch('/api/users/profile/', {
+                        method: 'GET',
+                        credentials: 'include'  // 🔥 передаёт sessionid
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        email = data.email || 'unknown';
+                        isAuth = true;
+                    }
+                } catch (err) {
+                    console.warn('Сессия не прошла проверку:', err);
+                }
+            }
+
+            // 3. Обновляем только интерфейс пользователя UI
+            if (isAuth) {
+                authStatus.innerHTML = `
+                    <div class="user-status authenticated">
+                        ✅ Авторизован: ${email}
+                        <button class="btn" onclick="logout()" style="margin-left: 10px; padding: 5px 10px; background: #666;">
+                            Выйти
+                        </button>
+                    </div>
+                `;
+            } else {
+                authStatus.innerHTML = '<div class="user-status anonymous">🔐 Не авторизован</div>';
+            }
+        }
+
+        // Быстрый вход одновременно по JWT и сессии
+        async function quickLogin(accountType) {
+            let email, password;
+
+            if (accountType === 'test_user') {
+                email = 'test@test.ru';
+                password = 'password';
+            } else if (accountType === 'admin') {
+                email = 'admin@admin.ru';
+                password = 'password'; 
+            } else {
+             alert('Неизвестный тип аккаунта');
+                return;
+            }
+
+            const messages = [];
+
+            // 1. Вход по JWT
+            try {
+                const jwtRes = await fetch('/api/token/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (jwtRes.ok) {
+                    const data = await jwtRes.json();
+                    localStorage.setItem('access_token', data.access);
+                    localStorage.setItem('refresh_token', data.refresh);
+                    messages.push('✅ JWT — авторизован');
+                } else {
+                    const error = await jwtRes.json().catch(() => ({}));
+                    messages.push(`❌ JWT: ${error.detail || 'ошибка'}`);
+                }
+            } catch (err) {
+                messages.push(`🌐 JWT: ${err.message}`);
+            }
+
+            // 2. Вход по сессии
+            try {
+                const sessionRes = await fetch('/api-auth/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    credentials: 'include',
+                    body: new URLSearchParams({ username: email, password, next: '/api/' })
+                });
+
+                if (sessionRes.ok || sessionRes.redirected || sessionRes.status === 302) {
+                    messages.push('✅ Сессия — авторизован');
+                } else {
+                    const text = await sessionRes.text();
+                    messages.push(`❌ Сессия: ${text.includes('csrf') ? 'CSRF' : 'логин/пароль'}`);
+                }
+                } catch (err) {
+                messages.push(`🌐 Сессия: ${err.message}`);
+            }
+
+            // Показываем результат
+            alert(`Результат входа:\n\n${messages.join('\n')}`);
+
+            // Обновляем UI — checkAuthStatus сам решит, что показать
+            checkAuthStatus();
+            loadEndpoints();
+        }
+
+        function logout() {
+            // 1. Удаляем JWT
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token');
+
+            // 2. Пытаемся выйти из сессии
+            fetch('/api-auth/logout/', {
+                method: 'POST',
+                headers: {
+                'X-CSRFToken': getCSRFToken()
+                },
+                credentials: 'include'  // обязательно для кук
+            }).catch(() => {
+                // Игнорируем ошибки сети — пользователь всё равно выходит из UI
+            }).finally(() => {
+                // 3. Обновляем интерфейс — всегда
+                const authStatus = document.getElementById('authStatus');
+                authStatus.innerHTML = '<div class="user-status anonymous">🔐 Не авторизован</div>';
+                loadEndpoints();
+            });
+        }
+
+        // Загрузка эндпоинтов
+        async function loadEndpoints() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const headers = {};
+
+                // Если есть JWT - указываем его в запросе
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                // Добавляем и CSRF-токен, если есть
+                const csrfToken = getCSRFToken();
+                if (csrfToken) {
+                    headers['X-CSRFToken'] = csrfToken;
+                }
+
+                // Всегда делаем запрос к api_root
+                const response = await fetch('/api/root/', {
+                    headers: headers,
+                    credentials: 'include'
+                });
+
+                console.log('✅ Response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error('Сервер вернул ошибку');
+                }
+
+                const data = await response.json();
+
+                console.log('🔧 data:', JSON.stringify(data, null, 2));
+                console.log('✅ JSON получен:', data);
+                console.dir(data);
+
+                if (!data || !data.endpoints) {
+                    console.error('❌ Нет поля endpoints:', data);
+                    throw new Error('Invalid API structure');
+                }
+
+                displayEndpoints(data.endpoints);
+            } catch (error) {
+                console.error('Ошибка загрузки эндпоинтов:', error);
+
+                // Только если совсем не удалось — показываем минимальный fallback
+                const container = document.getElementById('endpoints');
+                container.innerHTML = `
+                    <div class="endpoint">
+                        <div><strong>⚠️ Ошибка загрузки эндпоинтов</strong></div>
+                        <div class="url">/api/root/ недоступен</div>
+                        <div>Проверьте сервер или подключение.</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Отображение эндпоинтов
+        function displayEndpoints(endpoints) {
+            const container = document.getElementById('endpoints');
+            let html = '';
+
+            for (const [category, categoryEndpoints] of Object.entries(endpoints)) {
+                // Проверка categoryEndpoints
+                if (!categoryEndpoints || typeof categoryEndpoints !== 'object') {
+                    console.warn('Invalid category endpoints:', category, categoryEndpoints);
+                    continue;
+                }
+
+                html += `<h3>${category.toUpperCase()}</h3>`;
+                
+                for (const [endpointName, endpoint] of Object.entries(categoryEndpoints)) {
+                    // Проверка endpoint
+                    if (!endpoint || typeof endpoint !== 'object' || !categoryEndpoints.hasOwnProperty(endpointName)) {
+                        console.warn('Пропущен endpoint(не объект или не hasOwnProperty):', endpointName, endpoint);
+                        continue;
+                    }
+
+                    // Защита: проверяем method
+                    if (!endpoint.method || typeof endpoint.method !== 'string') {
+                        console.error('У эндпоинта нет method:', endpointName, endpoint);
+                        endpoint.method = 'GET'; // fallback
+                    }
+
+                    const methods = endpoint.method.split(',').map(m => m.trim().toLowerCase());
+                    
+                    html += `
+                        <div class="endpoint">
+                            <div>
+                                <strong>${endpointName.replace(/_/g, ' ')}</strong>
+                                ${endpoint.authentication_required ? '<span class="auth-badge">AUTH</span>' : ''}
+                            </div>
+                            <div class="url">
+                                <a href="${endpoint.url}" target="_blank" style="color: #2196F3; text-decoration: none;"}>
+                                    ${endpoint.url}
+                                </a>
+                            </div>
+                            <div>
+                                ${methods.map(m => `<span class="method ${m}">${m.toUpperCase()}</span>`).join('')}
+                            </div>
+                            <div>${endpoint.description}</div>
+                        </div>
+                    `;
+                }
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+            loadEndpoints();
+        });
+    </script>
+</body>
+</html>

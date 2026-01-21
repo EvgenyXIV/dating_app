@@ -1,0 +1,125 @@
+/*Настраиваем фон страницы. Указываем общий для Body шрифт Times New Roman
+ Центрируем текстовый контент на странице. */
+ body {
+    background: blanchedalmond;
+    /*Атрибуты стилей для всех тегов в блоке body, если иное не указано в теге*/
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+
+}
+/*Помещаем контент по тегу h в бокс шириной 50% от размера страницы сайта в браузере,
+чтобы текст не "расползался" по экрану..
+Указываем, также, параметры шрифта размер(40px), вес(bold), стиль(cursive), цвет(blue)*/
+h{
+    font-size:40px;
+    text-align: center;
+    font-weight: bold;
+    font-family: cursive;
+    box-sizing: content-box;
+    width: 50%;
+    color: blue;
+    margin: auto;
+}
+h1{
+    color: #9C1A1C;
+}
+
+p{
+    font-size:30px;
+    text-align: center;
+    box-sizing: content-box;
+    width: 50%;
+    color:green;
+    margin: auto;
+}
+/*Здесь указываем для рисунка его положение в блоке Body - отступ влево 50px от правой
+границы блока и параметры шрифта для текста, который будет на этом месте, пока рисунок не "подгрузится"*/
+img{
+    font-size:30px;
+    padding-right: 50px;
+    color:black;
+}
+
+m{
+    font-size:24px;
+    font-weight: bolder;
+    padding-right: 50px;
+    color:maroon;
+}
+
+/*свойства для тегов, в которых указан класс class="table"*/
+.table{
+    text-align: center;
+    /*box-sizing: content-box;*/
+    td, th{
+        width: max-content;     /*установка одинаковой ширины ячеек по максим.ширине содержимого*/
+    }
+    width: 1200px;  /*установка ширины контейнеров для всех тегов таблицы, как у самой таблицы*/
+    margin: auto;   /*центрирование по горизонтали контейнеров всех тегов таблицы одинаковыми отступами от краёв*/
+
+}
+/*формат границ таблицы и ячеек*/
+table {
+    table-layout: fixed;        /*установка одинаковой ширины ячеек таблицы*/
+    border-collapse: collapse;  /*единые (слитные) границы для ячеек таблицы*/
+    border: 4px solid grey;     /*ширина, стиль и цвет наружных границ*/
+    width: 1200px;              /*Ширина: таблицы в px, ячеек в %% от ширины таблицы*/
+}
+
+/*Формат ячеек колонок*/
+th {
+    font-size: 18px; /*размер шрифта заголовков колонок*/
+    font-weight: bold; /*стиль шрифта заголовков колонок*/
+    color: #30799B; /*цвет шрифта заголовков колонок*/
+    background: #A5D6D9; /*фон ячеек заголовков*/
+    border-top: 4px solid #11557C; /*ширина, стиль и цвет верхней границы ячеек заголовков */
+    border-bottom: 1px solid white; /*ширина, стиль и цвет нижней границы ячеек заголовков */
+    padding: 8px;   /*отступ текста заголовка колонки от всех границ ячейки заголовка*/
+    /*width: 12.5%;   /*Ширина ячейки %% от ширины таблицы*/
+}
+
+/*Формат ячеек колонок*/
+td {
+    font-size: 24px;
+    color: dodgerblue;
+    background: #D3E7E9;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid white;
+    padding: 8px;
+}
+
+/*подсветка строки таблицы при наведении курсора*/
+tr:hover td {
+    color: chocolate;
+    background: papayawhip;
+}
+
+/*Расположение названия таблицы*/
+caption {
+    font-size: 36px;
+    color: #9C1A1C;
+    caption-side: top;  /*top - над таблицей*/
+    text-align: center; /*по центру*/
+    padding: 10px;
+}
+
+/*свойства для тегов, в которых указан класс class="diary"*/
+.diary {
+    color: brown;
+    container-type: normal;
+    display: block;
+    max-width: 50%;
+    text-align: center;
+    margin: auto;
+}
+
+/*свойства для тегов button - изменение цвета шрифта и фона при наводке курсора*/
+button:hover {
+    color: darkblue;
+    font-weight: bold;
+    background: greenyellow;
+}
+
+
+
+

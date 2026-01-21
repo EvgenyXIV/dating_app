@@ -1,0 +1,67 @@
+<!-- Шаблон для социальной авторизации -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Завершите регистрацию</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 400px; margin: 40px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; color: #555; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; box-sizing: border-box;
+        }
+        .btn { background: #007BFF; color: white; padding: 12px 20px; border: none; border-radius: 5px; width: 100%; font-size: 16px; margin-top: 20px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+        .errorlist { color: red; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Добро пожаловать, {{ form.sociallogin.account.extra_data.first_name }}!</h1>
+        <p>Осталось заполнить несколько данных:</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="errorlist">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <label>Имя:</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}<div class="errorlist">{{ form.first_name.errors }}</div>{% endif %}
+
+            <label>Фамилия:</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}<div class="errorlist">{{ form.last_name.errors }}</div>{% endif %}
+
+            <label>email:</label>
+            {{ form.email }}
+
+            <label>Пол:</label>
+            {{ form.gender }}
+            {% if form.gender.errors %}<div class="errorlist">{{ form.gender.errors }}</div>{% endif %}
+
+            <label>Возраст:</label>
+            {{ form.age }}
+            {% if form.age.errors %}<div class="errorlist">{{ form.age.errors }}</div>{% endif %}
+
+            <label>Город:</label>
+            {{ form.city }}
+            {% if form.city.errors %}<div class="errorlist">{{ form.city.errors }}</div>{% endif %}
+
+            <label>Пароль:</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}<div class="errorlist">{{ form.password1.errors }}</div>{% endif %}
+
+            <label>Подтверждение пароля:</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}<div class="errorlist">{{ form.password2.errors }}</div>{% endif %}
+
+            <button type="submit" class="btn">Завершить регистрацию</button>
+        </form>
+    </div>
+</body>
+</html>

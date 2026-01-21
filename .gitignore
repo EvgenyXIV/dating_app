@@ -1,0 +1,20 @@
+# Виртуальное окружение
+.venv/
+
+# Переменные окружения
+.env
+
+# Сгенерированные файлы Django
+staticfiles/
+media/
+
+# Кэши Python
+__pycache__/
+*.pyc
+
+# Кэш ruff
+.ruff_cache/
+
+# IDE
+# .idea/        # PyCharm
+.vscode/      # VS Cod
